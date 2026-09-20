@@ -1,277 +1,330 @@
 <!doctype html>
 <html lang="en" manifest="cache.appcache">
-
 <head>
-
   <meta charset="utf-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1"
-  />
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PS4 JB FOR 13.52</title>
 
   <style>
+    * { box-sizing:border-box; }
 
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      background: #0b0d10;
-      color: #c8ced8;
+    html, body {
+      margin:0;
+      padding:0;
+      min-height:100%;
+      background:#07090c;
+      color:#d9e1eb;
+      font:15px/1.45 "Segoe UI", Arial, sans-serif;
+      overflow:hidden;
+    }
 
-      font:
-        15px/1.45 "Segoe UI",
-        system-ui,
-        sans-serif;
+    body:before {
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(38,92,158,.16), transparent 36%),
+        linear-gradient(180deg, rgba(255,255,255,.018), transparent 35%);
+    }
+
+    #stage {
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px 16px 76px;
+    }
+
+    #card {
+      width:min(700px, 94vw);
+      padding:30px 30px 27px;
+      text-align:center;
+      background:rgba(14,18,24,.94);
+      border:1px solid #26303d;
+      border-radius:14px;
+      box-shadow:0 18px 50px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.035);
+      position:relative;
+      overflow:hidden;
+    }
+
+    #card:before {
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      top:0;
+      height:3px;
+      background:linear-gradient(90deg,#3d8eff,#7fd0a0,#3d8eff);
+      background-size:200% 100%;
+      animation:scan 3.2s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position:0 0; }
+      to { background-position:200% 0; }
+    }
+
+    #eyebrow {
+      margin-top:3px;
+      color:#75869b;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.18em;
+      text-transform:uppercase;
     }
 
     #brand {
-      position: fixed;
-      top: calc(50% - 45px);
-      left: 50%;
-
-      transform:
-        translate(-50%, -50%);
-
-      width: 100%;
-
-      text-align: center;
-
-      font-size: 24px;
-      font-weight: 700;
-
-      letter-spacing: 0.08em;
-
-      color: #e6ebf2;
-
-      z-index: 2;
+      margin:8px 0 0;
+      font-size:30px;
+      line-height:1.12;
+      font-weight:800;
+      letter-spacing:.045em;
+      color:#f2f6fb;
     }
 
-    #credit {
-      position: fixed;
-
-      left: 0;
-      right: 0;
-
-      bottom: 14px;
-
-      text-align: center;
-
-      font-size: 12px;
-
-      color: #5c6672;
-
-      z-index: 3;
+    #goldhen {
+      display:inline-block;
+      margin-top:13px;
+      padding:6px 10px;
+      border:1px solid #3a684f;
+      border-radius:999px;
+      background:#0f1b15;
+      color:#9fe1b8;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.04em;
     }
 
-    #credit a {
-      color: #9fb3d0;
-      text-decoration: none;
+    #notice {
+      max-width:590px;
+      margin:17px auto 0;
+      padding:10px 12px;
+      border:1px solid #4b3c1f;
+      border-radius:9px;
+      background:#1a160d;
+      color:#c8b98a;
+      font-size:11px;
+      line-height:1.55;
     }
 
-    #credit a:hover {
-      text-decoration: underline;
+    #loaderArea {
+      margin-top:25px;
     }
-
-    /* running: a spinner under the brand.
-       jb.js sets body.done / body.fail / body.log. */
 
     #spin {
-      position: fixed;
-
-      top: calc(50% + 35px);
-      left: 50%;
-
-      width: 46px;
-      height: 46px;
-
-      margin:
-        -23px 0 0 -23px;
-
-      border:
-        4px solid #1e2732;
-
-      border-top-color:
-        #7fd0a0;
-
-      border-radius:
-        50%;
-
-      animation:
-        spin 0.9s linear infinite;
+      width:52px;
+      height:52px;
+      margin:0 auto;
+      border:4px solid #1e2935;
+      border-top-color:#78b8ff;
+      border-right-color:#7fd0a0;
+      border-radius:50%;
+      animation:spin .85s linear infinite;
+      box-shadow:0 0 24px rgba(79,152,245,.08);
     }
 
-    @keyframes spin {
-      to {
-        transform:
-          rotate(360deg);
-      }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    #loadingTitle {
+      margin:14px 0 0;
+      font-size:15px;
+      font-weight:750;
+      color:#dbe5ef;
+    }
+
+    #loadingSub {
+      margin:5px 0 0;
+      color:#75869a;
+      font-size:11px;
+    }
+
+    #barTrack {
+      width:min(400px, 86%);
+      height:5px;
+      margin:17px auto 0;
+      border-radius:999px;
+      overflow:hidden;
+      background:#151d26;
+    }
+
+    #bar {
+      width:34%;
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,#4f98f5,#7fd0a0);
+      animation:indeterminate 1.55s ease-in-out infinite;
+      transform:translateX(-120%);
+    }
+
+    @keyframes indeterminate {
+      0% { transform:translateX(-120%); }
+      55% { transform:translateX(160%); }
+      100% { transform:translateX(310%); }
     }
 
     #msg {
-      position: fixed;
-
-      top: 50%;
-
-      left: 0;
-      right: 0;
-
-      transform:
-        translateY(-50%);
-
-      text-align: center;
-
-      font-size: 16px;
-
-      letter-spacing:
-        0.5px;
-
-      display: none;
+      display:none;
+      margin-top:22px;
+      font-size:16px;
+      font-weight:750;
+      color:#d79a90;
     }
 
-    #wrap {
-      padding: 0;
+    #msgSub {
+      display:none;
+      margin-top:6px;
+      color:#8290a2;
+      font-size:11px;
     }
 
-    #state,
-    #out {
-      display: none;
+    #updateInfo {
+      margin-top:18px;
+      color:#647286;
+      font-size:10px;
+      line-height:1.55;
     }
 
-    body.done #spin {
-      display: none;
+    #wrap { padding:0; }
+    #state, #out { display:none; }
+
+    body.done #spin,
+    body.done #barTrack,
+    body.fail #spin,
+    body.fail #barTrack {
+      display:none;
     }
 
-    body.fail #spin {
-      display: none;
+    body.done #loadingTitle {
+      color:#8bd9a9;
     }
 
-    body.fail #msg {
-      display: block;
+    body.done #loadingTitle:before {
+      content:"Jailbreak process completed";
     }
 
-    /* ?log=1 -- the full step log, styled like the landing. */
+    body.done #loadingTitle {
+      font-size:0;
+    }
 
-    body.log #spin,
-    body.log #msg {
-      display: none;
+    body.done #loadingTitle:before {
+      font-size:15px;
+    }
+
+    body.done #loadingSub {
+      color:#7a8b9f;
+    }
+
+    body.fail #loadingTitle,
+    body.fail #loadingSub {
+      display:none;
+    }
+
+    body.fail #msg,
+    body.fail #msgSub {
+      display:block;
+    }
+
+    /* ?log=1 keeps the exploit's full debug output available. */
+    body.log {
+      overflow:auto;
+    }
+
+    body.log #stage {
+      display:none;
     }
 
     body.log #wrap {
-      padding:
-        14px 18px;
+      padding:14px 18px;
     }
 
     body.log #state {
-      display: block;
-
-      font-size:
-        22px;
-
-      font-weight:
-        700;
-
-      margin:
-        0 0 8px;
+      display:block;
+      font-size:22px;
+      font-weight:700;
+      margin:0 0 8px;
     }
 
     body.log #out {
-      display: block;
-
-      white-space:
-        pre-wrap;
-
-      font:
-        12px/1.45 Consolas,
-        monospace;
-
-      background:
-        #11151b;
-
-      border:
-        1px solid #1e2732;
-
-      border-radius:
-        5px;
-
-      padding:
-        10px 12px;
-
-      height:
-        calc(100vh - 141px);
-
-      overflow-y:
-        auto;
+      display:block;
+      white-space:pre-wrap;
+      font:12px/1.45 Consolas, monospace;
+      background:#0d1218;
+      border:1px solid #202b37;
+      border-radius:7px;
+      padding:10px 12px;
+      height:calc(100vh - 74px);
+      overflow-y:auto;
     }
 
-    .ok {
-      color:
-        #7fd0a0;
+    .ok { color:#7fd0a0; }
+    .bad, .danger { color:#d08a7f; }
+    .warn { color:#d8c07f; }
+    .safe { color:#7fd0a0; }
+    code { color:#9fb3d0; }
+
+    #credit {
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:14px;
+      text-align:center;
+      font-size:11px;
+      color:#536071;
+      z-index:3;
     }
 
-    .bad {
-      color:
-        #d08a7f;
-    }
+    #credit a { color:#8198b7; text-decoration:none; }
+    #credit a:hover { text-decoration:underline; }
 
-    .warn {
-      color:
-        #d8c07f;
+    @media (max-width:600px) {
+      #card { padding:25px 18px 23px; }
+      #brand { font-size:25px; }
     }
-
-    .safe {
-      color:
-        #7fd0a0;
-    }
-
-    .danger {
-      color:
-        #d08a7f;
-    }
-
-    code {
-      color:
-        #9fb3d0;
-    }
-
   </style>
-
 </head>
 
 <body>
+  <div id="stage">
+    <div id="card">
+      <div id="eyebrow">PlayStation 4 Jailbreak Host</div>
+      <div id="brand">PS4 JB FOR 13.52</div>
+      <div id="goldhen">INCLUDES GoldHEN v2.4b18.11</div>
 
-  <div id="brand">
-    PS4 JB FOR 13.52
-  </div>
+      <div id="notice">
+        IMPORTANT: This package is prepared for firmware 13.52. Older firmware compatibility entries remain in the build,
+        but 13.52 is the primary target. Use a build intended for your exact firmware for normal use.
+      </div>
 
-  <div id="spin"></div>
+      <div id="loaderArea">
+        <div id="spin"></div>
+        <div id="loadingTitle">Running jailbreak...</div>
+        <div id="loadingSub">Do not close the browser while the exploit is running.</div>
+        <div id="barTrack"><div id="bar"></div></div>
+      </div>
 
-  <div id="msg">
-    Restart your console
+      <div id="msg">Jailbreak failed — restart your console and try again.</div>
+      <div id="msgSub">Keep this page open only while retrying the exploit.</div>
+
+      <div id="updateInfo">
+        GoldHEN v2.4b18.11 is included. If a newer GoldHEN build becomes available for firmware 13.52 or below,
+        an updated release notice will be published.
+      </div>
+    </div>
   </div>
 
   <div id="wrap">
-
     <div id="state"></div>
-
     <div id="out"></div>
-
   </div>
 
   <div id="credit">
-    Exploit by
-    <a href="https://github.com/thebelx">Thebelx</a>
+    Exploit by <a href="https://github.com/thebelx">Thebelx</a>
   </div>
 
   <script type="module">
-
     import "./jb.js?v=10";
-
   </script>
-
 </body>
-
 </html>

@@ -5,43 +5,242 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PS4 JB FOR 13.52</title>
 <style>
-  html, body { margin:0; padding:0; background:#0b0d10; color:#c8ced8;
-               font:15px/1.45 "Segoe UI", system-ui, sans-serif; }
+  * { box-sizing:border-box; }
 
-  #wrap { padding:16px 18px; }
-
-  #state { font-size:22px; font-weight:700; margin:0 0 6px; }
-
-  #det { font-size:13px; color:#8b95a3; margin:0 0 4px; }
-
-  #det b { color:#c8ced8; font-weight:600; }
-
-  #cache {
-    font-size:12px;
-    color:#5c6672;
-    margin:0 0 10px;
-    min-height:14px;
+  html, body {
+    margin:0;
+    padding:0;
+    min-height:100%;
+    background:#07090c;
+    color:#d9e1eb;
+    font:15px/1.45 "Segoe UI", Arial, sans-serif;
+    overflow-x:hidden;
   }
 
-  #cache.cacheok { color:#7fd0a0; }
+  body:before {
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(circle at 50% 36%, rgba(38,92,158,.16), transparent 38%),
+      linear-gradient(180deg, rgba(255,255,255,.018), transparent 35%);
+  }
 
-  .ok { color:#7fd0a0; }
-  .bad { color:#d08a7f; }
-  .warn { color:#d8c07f; }
+  .shell {
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:22px 16px 72px;
+  }
+
+  .panel {
+    width:min(760px, 96vw);
+    background:rgba(14,18,24,.94);
+    border:1px solid #26303d;
+    border-radius:14px;
+    box-shadow:0 18px 50px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.035);
+    overflow:hidden;
+  }
+
+  .topline {
+    height:3px;
+    background:linear-gradient(90deg,#3d8eff,#7fd0a0,#3d8eff);
+    background-size:200% 100%;
+    animation:scan 3.2s linear infinite;
+  }
+
+  @keyframes scan {
+    from { background-position:0 0; }
+    to { background-position:200% 0; }
+  }
+
+  .content { padding:30px 30px 26px; }
+
+  .eyebrow {
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.18em;
+    color:#7b8ca3;
+    text-transform:uppercase;
+    margin-bottom:9px;
+  }
 
   #brand {
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:100%;
-    text-align:center;
-    font-size:24px;
-    font-weight:700;
-    letter-spacing:.08em;
-    color:#e6ebf2;
-    z-index:2;
+    margin:0;
+    font-size:30px;
+    line-height:1.1;
+    font-weight:800;
+    letter-spacing:.045em;
+    color:#f2f6fb;
   }
+
+  .subtitle {
+    margin:9px 0 0;
+    color:#8e9bad;
+    font-size:13px;
+  }
+
+  .badges {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:20px 0 18px;
+  }
+
+  .badge {
+    border:1px solid #2b3848;
+    background:#111821;
+    color:#aebdce;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+
+  .badge.goldhen {
+    border-color:#3a684f;
+    color:#9fe1b8;
+    background:#0f1b15;
+  }
+
+  .notice {
+    border:1px solid #4b3c1f;
+    background:#1a160d;
+    border-radius:10px;
+    padding:13px 14px;
+    margin:0 0 16px;
+  }
+
+  .notice strong {
+    display:block;
+    color:#efd58a;
+    font-size:12px;
+    letter-spacing:.06em;
+    margin-bottom:4px;
+  }
+
+  .notice span {
+    color:#c5b687;
+    font-size:12px;
+  }
+
+  .statusbox {
+    border:1px solid #202a36;
+    background:#0b0f14;
+    border-radius:10px;
+    padding:17px 16px 15px;
+  }
+
+  .state-row {
+    display:flex;
+    align-items:center;
+    gap:11px;
+  }
+
+  .loader {
+    width:19px;
+    height:19px;
+    flex:0 0 19px;
+    border:2px solid #273442;
+    border-top-color:#79b7ff;
+    border-radius:50%;
+    animation:spin .85s linear infinite;
+  }
+
+  body.ready .loader,
+  body.error .loader {
+    animation:none;
+  }
+
+  body.ready .loader {
+    border-color:#48755a;
+    background:#7fd0a0;
+    box-shadow:inset 0 0 0 5px #0b0f14;
+  }
+
+  body.error .loader {
+    border-color:#70463f;
+    background:#d08a7f;
+    box-shadow:inset 0 0 0 5px #0b0f14;
+  }
+
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  #state {
+    margin:0;
+    font-size:18px;
+    font-weight:750;
+    color:#e6edf5;
+  }
+
+  #det {
+    margin:8px 0 0 30px;
+    color:#8694a6;
+    font-size:12px;
+  }
+
+  #det b { color:#c9d4df; font-weight:700; }
+
+  .progress-track {
+    height:5px;
+    margin:15px 0 0;
+    overflow:hidden;
+    border-radius:999px;
+    background:#151d26;
+  }
+
+  #progressbar {
+    width:18%;
+    height:100%;
+    border-radius:999px;
+    background:linear-gradient(90deg,#4f98f5,#7fd0a0);
+    transition:width .25s ease;
+    animation:pulsebar 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulsebar {
+    0%,100% { opacity:.65; }
+    50% { opacity:1; }
+  }
+
+  #cache {
+    min-height:18px;
+    margin:10px 0 0;
+    color:#718096;
+    font-size:12px;
+  }
+
+  #cache.cacheok { color:#8bd9a9; }
+  #cache.cachebad { color:#d79a90; }
+
+  .cache-complete {
+    display:none;
+    margin-top:12px;
+    padding:11px 12px;
+    border:1px solid #315a42;
+    background:#0d1812;
+    border-radius:8px;
+    color:#94dbae;
+    font-size:12px;
+    font-weight:650;
+  }
+
+  .cache-complete.show { display:block; }
+
+  .footer-note {
+    margin-top:18px;
+    color:#657386;
+    font-size:11px;
+    line-height:1.55;
+  }
+
+  .ok { color:#7fd0a0 !important; }
+  .bad { color:#d08a7f !important; }
+  .warn { color:#d8c07f !important; }
 
   #credit {
     position:fixed;
@@ -49,30 +248,64 @@
     right:0;
     bottom:14px;
     text-align:center;
-    font-size:12px;
-    color:#5c6672;
+    font-size:11px;
+    color:#536071;
     z-index:3;
   }
 
-  #credit a {
-    color:#9fb3d0;
-    text-decoration:none;
-  }
+  #credit a { color:#8198b7; text-decoration:none; }
+  #credit a:hover { text-decoration:underline; }
 
-  #credit a:hover {
-    text-decoration:underline;
+  @media (max-width:600px) {
+    .content { padding:24px 18px 22px; }
+    #brand { font-size:25px; }
+    .subtitle { font-size:12px; }
   }
 </style>
 </head>
-
 <body>
 
-<div id="brand">PS4 JB FOR 13.52</div>
+<div class="shell">
+  <main class="panel">
+    <div class="topline"></div>
+    <div class="content">
+      <div class="eyebrow">PlayStation 4 Jailbreak Host</div>
+      <h1 id="brand">PS4 JB FOR 13.52</h1>
+      <p class="subtitle">Firmware target: 13.52 &middot; Offline cache supported</p>
 
-<div id="wrap">
-  <div id="state">detecting firmware...</div>
-  <div id="det"></div>
-  <div id="cache"></div>
+      <div class="badges">
+        <span class="badge">FW 13.52 TARGET</span>
+        <span class="badge goldhen">INCLUDES GoldHEN v2.4b18.11</span>
+      </div>
+
+      <div class="notice">
+        <strong>IMPORTANT FIRMWARE NOTICE</strong>
+        <span>
+          This package is prepared for firmware 13.52. Older firmware compatibility entries remain available,
+          but do not use this 13.52 package on firmware below 13.52 unless you intentionally want to test the legacy path.
+          For normal use, use the build intended for your exact firmware.
+        </span>
+      </div>
+
+      <section class="statusbox">
+        <div class="state-row">
+          <div class="loader" aria-hidden="true"></div>
+          <div id="state">Detecting firmware...</div>
+        </div>
+        <div id="det"></div>
+        <div class="progress-track"><div id="progressbar"></div></div>
+        <div id="cache">Preparing cache status...</div>
+        <div id="cacheComplete" class="cache-complete">
+          CACHE COMPLETE — You may now turn off Wi-Fi or disconnect the LAN cable.
+        </div>
+      </section>
+
+      <div class="footer-note">
+        Included payload: <b>GoldHEN v2.4b18.11</b>.<br>
+        If a newer GoldHEN build becomes available for firmware 13.52 or below, an updated release notice will be published.
+      </div>
+    </div>
+  </main>
 </div>
 
 <script>
@@ -80,25 +313,34 @@
     var stateEl = document.getElementById("state");
     var detEl = document.getElementById("det");
     var cacheEl = document.getElementById("cache");
+    var progressEl = document.getElementById("progressbar");
+    var cacheCompleteEl = document.getElementById("cacheComplete");
 
     function setState(t, c) {
         stateEl.textContent = t;
         stateEl.className = c || "";
     }
 
-    function setCache(t, ok) {
+    function setCache(t, mode) {
         cacheEl.textContent = t;
-        cacheEl.className = ok ? "cacheok" : "";
+        cacheEl.className = mode === "ok" ? "cacheok" : (mode === "bad" ? "cachebad" : "");
+    }
+
+    function setProgress(pct) {
+        pct = Math.max(0, Math.min(100, pct));
+        progressEl.style.width = pct + "%";
+    }
+
+    function markCacheComplete() {
+        cacheCompleteEl.className = "cache-complete show";
+        document.body.className = "ready";
+        setProgress(100);
     }
 
     var params = new URLSearchParams(location.search);
 
-    // Firmwares this build has a MEASURED kernel table for. jb.js still runs its
-    // own kernel-table-present gate, so this is UX only -- an unlisted firmware
-    // can still be launched with a tap. KEEP IN SYNC with ps4_offsets.js: add a
-    // fwnum here in the SAME commit that fills that firmware's kernel RVAs.
-    // The PS4 reports its minor as two hex digits in the UA (13.52 -> minor 0x52).
-
+    // Keep the legacy firmware entries from the original build.
+    // 13.52 remains the primary target shown by this UI.
     var SUPPORTED = {
         1302: 1,
         1304: 1,
@@ -107,273 +349,159 @@
     };
 
     var key = null, fwnum = null;
-
-    var m = /PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(
-        navigator.userAgent
-    );
+    var m = /PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
 
     if (m) {
         var ms = parseInt(m[2], 16).toString(16);
-
-        if (ms.length < 2)
-            ms = "0" + ms;
-
+        if (ms.length < 2) ms = "0" + ms;
         key = m[1] + "." + ms;
-
-        fwnum =
-            parseInt(m[1], 10) * 100 +
-            parseInt(ms, 10);
+        fwnum = parseInt(m[1], 10) * 100 + parseInt(ms, 10);
     }
 
-    var forced =
-        params.get("force") === "1";
+    var forced = params.get("force") === "1";
+    var supported = forced || (fwnum !== null && SUPPORTED[fwnum] === 1);
+    var isTarget = fwnum === 1352;
+    var isLegacy = supported && !isTarget && !forced;
 
-    var supported =
-        forced ||
-        (
-            fwnum !== null &&
-            SUPPORTED[fwnum] === 1
-        );
+    if (isTarget) {
+        detEl.innerHTML = "Detected firmware <b>" + (key || "13.52") + "</b> &middot; <b>13.52 target confirmed</b>";
+    } else if (isLegacy) {
+        detEl.innerHTML = "Detected firmware <b>" + (key || "unknown") + "</b> &middot; legacy compatibility entry";
+    } else {
+        detEl.innerHTML = "Detected firmware <b>" + (key || "unknown") + "</b> &middot; not in this build's kernel table";
+    }
 
-    detEl.innerHTML =
-        "firmware <b>" +
-        (key || "unknown") +
-        "</b>" +
-        (
-            supported
-                ? " &middot; <b>supported</b>"
-                : " &middot; not in this build's kernel table"
-        );
-
-    var target =
-        "jb.html" + location.search;
+    var target = "jb.html" + location.search;
 
     function go() {
-        setState(
-            "loading jailbreak...",
-            "warn"
-        );
-
-        location.replace(target);
+        setState("Loading jailbreak and GoldHEN v2.4b18.11...", "warn");
+        setProgress(100);
+        setTimeout(function () {
+            location.replace(target);
+        }, 260);
     }
 
     function waitForTap(msg, action) {
         setState(msg, "warn");
 
         function fire() {
-            window.removeEventListener(
-                "click",
-                fire
-            );
-
-            window.removeEventListener(
-                "keydown",
-                fire
-            );
-
+            window.removeEventListener("click", fire);
+            window.removeEventListener("keydown", fire);
             action();
         }
 
-        window.addEventListener(
-            "click",
-            fire
-        );
-
-        window.addEventListener(
-            "keydown",
-            fire
-        );
+        window.addEventListener("click", fire);
+        window.addEventListener("keydown", fire);
     }
 
-    // Off-target consoles are not launched automatically -- one tap still runs
-    // it, so a user-agent quirk on the real 13.52 console can never lock it out.
-
+    // Legacy entries remain runnable, but the UI clearly warns that 13.52 is the target.
     if (!supported) {
-        setState(
-            "UNSUPPORTED FIRMWARE",
-            "bad"
-        );
-
+        document.body.className = "error";
+        setState("UNSUPPORTED FIRMWARE", "bad");
+        setCache("This firmware is not present in the current kernel table.", "bad");
         waitForTap(
-            "UNSUPPORTED (" +
-            (key || "unknown") +
-            ") -- press X or tap to run anyway",
+            "UNSUPPORTED (" + (key || "unknown") + ") — press X or tap to run anyway",
             go
         );
-
         return;
     }
 
-    var ac =
-        window.applicationCache;
+    if (isLegacy) {
+        setState("LEGACY FIRMWARE DETECTED — 13.52 IS THE PRIMARY TARGET", "warn");
+    }
 
-    if (
-        !ac ||
-        !document.documentElement.hasAttribute("manifest")
-    ) {
+    var ac = window.applicationCache;
 
+    if (!ac || !document.documentElement.hasAttribute("manifest")) {
+        setCache("Application cache is unavailable. Continuing online...", "bad");
         go();
 
     } else if (!navigator.onLine) {
-
-        setCache(
-            "offline -- from cache",
-            true
-        );
-
+        setCache("Offline mode — loading from existing cache.", "ok");
+        markCacheComplete();
         go();
 
     } else if (ac.status === ac.IDLE) {
-
-        setCache(
-            "cached",
-            true
-        );
-
+        setCache("Cache ready for offline use.", "ok");
+        markCacheComplete();
         go();
 
-    } else if (
-        ac.status === ac.UPDATEREADY
-    ) {
-
-        try {
-            ac.swapCache();
-        } catch (e) {}
-
-        setCache(
-            "update downloaded",
-            true
-        );
-
+    } else if (ac.status === ac.UPDATEREADY) {
+        try { ac.swapCache(); } catch (e) {}
+        setCache("Cache update downloaded successfully.", "ok");
+        markCacheComplete();
         waitForTap(
-            "UPDATE READY -- press X or tap to reload & run",
-            function () {
-                location.reload();
-            }
+            "UPDATE READY — press X or tap to reload and run",
+            function () { location.reload(); }
         );
 
     } else {
+        setCache("Checking offline cache...");
+        setProgress(12);
 
-        setCache(
-            "checking cache..."
-        );
+        ac.addEventListener("downloading", function () {
+            setCache("Downloading offline cache. Keep the network connected...");
+            setProgress(20);
+        }, false);
 
-        ac.addEventListener(
-            "downloading",
-            function () {
-                setCache(
-                    "caching for offline (first run)..."
-                );
-            },
-            false
-        );
+        ac.addEventListener("progress", function (e) {
+            if (e && e.total) {
+                var pct = Math.round((e.loaded / e.total) * 100);
+                setProgress(pct);
+                setCache("Downloading offline cache... " + pct + "%");
+            }
+        }, false);
 
-        ac.addEventListener(
-            "progress",
-            function (e) {
-                if (
-                    e &&
-                    e.total
-                ) {
-                    setCache(
-                        "caching " +
-                        Math.round(
-                            (e.loaded / e.total) * 100
-                        ) +
-                        "%"
-                    );
-                }
-            },
-            false
-        );
+        ac.addEventListener("cached", function () {
+            setCache("Offline cache downloaded successfully.", "ok");
+            markCacheComplete();
+            waitForTap(
+                "CACHE COMPLETE — press X or tap to run",
+                go
+            );
+        }, false);
 
-        ac.addEventListener(
-            "cached",
-            function () {
-                setCache(
-                    "cached for offline use",
-                    true
-                );
+        ac.addEventListener("updateready", function () {
+            try { ac.swapCache(); } catch (e) {}
+            setCache("Cache update downloaded successfully.", "ok");
+            markCacheComplete();
+            waitForTap(
+                "UPDATE READY — press X or tap to reload and run",
+                function () { location.reload(); }
+            );
+        }, false);
 
-                waitForTap(
-                    "CACHED (first run) -- press X or tap to run",
-                    go
-                );
-            },
-            false
-        );
+        ac.addEventListener("noupdate", function () {
+            setCache("Cache is already current and ready for offline use.", "ok");
+            markCacheComplete();
+            go();
+        }, false);
 
-        ac.addEventListener(
-            "updateready",
-            function () {
-                try {
-                    ac.swapCache();
-                } catch (e) {}
+        ac.addEventListener("error", function () {
+            document.body.className = "error";
+            setCache("Cache download failed. Keep the network connected and try again.", "bad");
+            setProgress(100);
+            waitForTap(
+                "CACHE FAILED — press X or tap to run anyway",
+                go
+            );
+        }, false);
 
-                setCache(
-                    "update downloaded",
-                    true
-                );
-
-                waitForTap(
-                    "UPDATE READY -- press X or tap to reload & run",
-                    function () {
-                        location.reload();
-                    }
-                );
-            },
-            false
-        );
-
-        ac.addEventListener(
-            "noupdate",
-            function () {
-                setCache(
-                    "cached -- offline ready",
-                    true
-                );
-
-                go();
-            },
-            false
-        );
-
-        ac.addEventListener(
-            "error",
-            function () {
-                setCache(
-                    "cache unavailable"
-                );
-
-                waitForTap(
-                    "CACHE FAILED -- press X or tap to run anyway",
-                    go
-                );
-            },
-            false
-        );
-
-        ac.addEventListener(
-            "obsolete",
-            function () {
-                setCache(
-                    "cache obsolete"
-                );
-
-                waitForTap(
-                    "CACHE OBSOLETE -- press X or tap to run",
-                    go
-                );
-            },
-            false
-        );
+        ac.addEventListener("obsolete", function () {
+            document.body.className = "error";
+            setCache("The offline cache manifest is obsolete.", "bad");
+            setProgress(100);
+            waitForTap(
+                "CACHE OBSOLETE — press X or tap to run",
+                go
+            );
+        }, false);
     }
 })();
 </script>
 
 <div id="credit">
-  Exploit by
-  <a href="https://github.com/thebelx">Thebelx</a>
+  Exploit by <a href="https://github.com/thebelx">Thebelx</a>
 </div>
 
 </body>
