@@ -49,16 +49,7 @@ function terse(s) {
 
 const SHOW_LOG = params.get("log") === "1";
 if (SHOW_LOG && document.body) document.body.className = "log";
-let totalMarks = 40; // rough estimate of steps
-let currentMark = 0;
-
 function finishUI(ok) {
-  const pb = document.getElementById("progress-bar");
-  const pt = document.getElementById("progress-text");
-  if (ok && pb && pt) {
-    pb.style.width = "100%";
-    pt.innerText = "100% - Jailbreak Completed!";
-  }
   if (SHOW_LOG || !document.body) return;
   document.body.className = ok ? "done" : "fail";
 }
@@ -86,16 +77,6 @@ function mark(tag, detail) {
       .join("\n");
     outEl.scrollTop = outEl.scrollHeight;
   }
-  
-  const pb = document.getElementById("progress-bar");
-  const pt = document.getElementById("progress-text");
-  if (pb && pt) {
-    currentMark++;
-    let percent = Math.min(99, Math.floor((currentMark / totalMarks) * 100));
-    pb.style.width = percent + "%";
-    pt.innerText = percent + "% - " + tag;
-  }
-  
   post(tag, raw);
 }
 
