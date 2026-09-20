@@ -321,26 +321,30 @@
         stateEl.className = c || "";
     }
 
-    function setCache(t, mode) {
+    function setCache(t, ok) {
         cacheEl.textContent = t;
-        cacheEl.className = mode === "ok" ? "cacheok" : (mode === "bad" ? "cachebad" : "");
+        cacheEl.className = ok ? "cacheok" : "";
     }
 
     function setProgress(pct) {
+        if (!progressEl) return;
         pct = Math.max(0, Math.min(100, pct));
         progressEl.style.width = pct + "%";
     }
 
     function markCacheComplete() {
-        cacheCompleteEl.className = "cache-complete show";
-        document.body.className = "ready";
+        if (cacheCompleteEl) cacheCompleteEl.className = "cache-complete show";
         setProgress(100);
     }
 
     var params = new URLSearchParams(location.search);
 
-    // Keep the legacy firmware entries from the original build.
-    // 13.52 remains the primary target shown by this UI.
+    // Firmwares this build has a MEASURED kernel table for. jb.js still runs its
+    // own kernel-table-present gate, so this is UX only -- an unlisted firmware
+    // can still be launched with a tap. KEEP IN SYNC with ps4_offsets.js: add a
+    // fwnum here in the SAME commit that fills that firmware's kernel RVAs.
+    // The PS4 reports its minor as two hex digits in the UA (13.52 -> minor 0x52).
+
     var SUPPORTED = {
         1302: 1,
         1304: 1,
@@ -349,153 +353,278 @@
     };
 
     var key = null, fwnum = null;
-    var m = /PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
+
+    var m = /PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(
+        navigator.userAgent
+    );
 
     if (m) {
         var ms = parseInt(m[2], 16).toString(16);
-        if (ms.length < 2) ms = "0" + ms;
+
+        if (ms.length < 2)
+            ms = "0" + ms;
+
         key = m[1] + "." + ms;
-        fwnum = parseInt(m[1], 10) * 100 + parseInt(ms, 10);
+
+        fwnum =
+            parseInt(m[1], 10) * 100 +
+            parseInt(ms, 10);
     }
 
-    var forced = params.get("force") === "1";
-    var supported = forced || (fwnum !== null && SUPPORTED[fwnum] === 1);
+    var forced =
+        params.get("force") === "1";
+
+    var supported =
+        forced ||
+        (
+            fwnum !== null &&
+            SUPPORTED[fwnum] === 1
+        );
+
     var isTarget = fwnum === 1352;
-    var isLegacy = supported && !isTarget && !forced;
 
-    if (isTarget) {
-        detEl.innerHTML = "Detected firmware <b>" + (key || "13.52") + "</b> &middot; <b>13.52 target confirmed</b>";
-    } else if (isLegacy) {
-        detEl.innerHTML = "Detected firmware <b>" + (key || "unknown") + "</b> &middot; legacy compatibility entry";
-    } else {
-        detEl.innerHTML = "Detected firmware <b>" + (key || "unknown") + "</b> &middot; not in this build's kernel table";
-    }
+    detEl.innerHTML =
+        "Firmware <b>" +
+        (key || "unknown") +
+        "</b>" +
+        (
+            supported
+                ? (isTarget
+                    ? " &middot; <b>13.52 target</b>"
+                    : " &middot; <b>legacy supported entry</b>")
+                : " &middot; not in this build's kernel table"
+        );
 
-    var target = "jb.html" + location.search;
+    var target =
+        "jb.html" + location.search;
 
     function go() {
-        setState("Loading jailbreak and GoldHEN v2.4b18.11...", "warn");
+        setState(
+            "Loading jailbreak...",
+            "warn"
+        );
         setProgress(100);
-        setTimeout(function () {
-            location.replace(target);
-        }, 260);
+        location.replace(target);
     }
 
     function waitForTap(msg, action) {
         setState(msg, "warn");
 
         function fire() {
-            window.removeEventListener("click", fire);
-            window.removeEventListener("keydown", fire);
+            window.removeEventListener(
+                "click",
+                fire
+            );
+
+            window.removeEventListener(
+                "keydown",
+                fire
+            );
+
             action();
         }
 
-        window.addEventListener("click", fire);
-        window.addEventListener("keydown", fire);
+        window.addEventListener(
+            "click",
+            fire
+        );
+
+        window.addEventListener(
+            "keydown",
+            fire
+        );
     }
 
-    // Legacy entries remain runnable, but the UI clearly warns that 13.52 is the target.
+    // Off-target consoles are not launched automatically -- one tap still runs
+    // it, so a user-agent quirk on the real 13.52 console can never lock it out.
+
     if (!supported) {
-        document.body.className = "error";
-        setState("UNSUPPORTED FIRMWARE", "bad");
-        setCache("This firmware is not present in the current kernel table.", "bad");
+        setState(
+            "UNSUPPORTED FIRMWARE",
+            "bad"
+        );
+
         waitForTap(
-            "UNSUPPORTED (" + (key || "unknown") + ") — press X or tap to run anyway",
+            "UNSUPPORTED (" +
+            (key || "unknown") +
+            ") -- press X or tap to run anyway",
             go
         );
+
         return;
     }
 
-    if (isLegacy) {
-        setState("LEGACY FIRMWARE DETECTED — 13.52 IS THE PRIMARY TARGET", "warn");
-    }
+    var ac =
+        window.applicationCache;
 
-    var ac = window.applicationCache;
+    if (
+        !ac ||
+        !document.documentElement.hasAttribute("manifest")
+    ) {
 
-    if (!ac || !document.documentElement.hasAttribute("manifest")) {
-        setCache("Application cache is unavailable. Continuing online...", "bad");
         go();
 
     } else if (!navigator.onLine) {
-        setCache("Offline mode — loading from existing cache.", "ok");
+
+        setCache(
+            "Offline -- loading from cache.",
+            true
+        );
         markCacheComplete();
+
         go();
 
     } else if (ac.status === ac.IDLE) {
-        setCache("Cache ready for offline use.", "ok");
+
+        setCache(
+            "Cache ready -- offline use available.",
+            true
+        );
         markCacheComplete();
+
         go();
 
-    } else if (ac.status === ac.UPDATEREADY) {
-        try { ac.swapCache(); } catch (e) {}
-        setCache("Cache update downloaded successfully.", "ok");
+    } else if (
+        ac.status === ac.UPDATEREADY
+    ) {
+
+        try {
+            ac.swapCache();
+        } catch (e) {}
+
+        setCache(
+            "Cache update downloaded successfully.",
+            true
+        );
         markCacheComplete();
+
         waitForTap(
-            "UPDATE READY — press X or tap to reload and run",
-            function () { location.reload(); }
+            "UPDATE READY -- press X or tap to reload & run",
+            function () {
+                location.reload();
+            }
         );
 
     } else {
-        setCache("Checking offline cache...");
+
+        setCache(
+            "Checking cache..."
+        );
         setProgress(12);
 
-        ac.addEventListener("downloading", function () {
-            setCache("Downloading offline cache. Keep the network connected...");
-            setProgress(20);
-        }, false);
+        ac.addEventListener(
+            "downloading",
+            function () {
+                setCache(
+                    "Caching for offline use (first run)..."
+                );
+                setProgress(20);
+            },
+            false
+        );
 
-        ac.addEventListener("progress", function (e) {
-            if (e && e.total) {
-                var pct = Math.round((e.loaded / e.total) * 100);
-                setProgress(pct);
-                setCache("Downloading offline cache... " + pct + "%");
-            }
-        }, false);
+        ac.addEventListener(
+            "progress",
+            function (e) {
+                if (
+                    e &&
+                    e.total
+                ) {
+                    var pct = Math.round(
+                        (e.loaded / e.total) * 100
+                    );
+                    setProgress(pct);
+                    setCache(
+                        "Caching " + pct + "%"
+                    );
+                }
+            },
+            false
+        );
 
-        ac.addEventListener("cached", function () {
-            setCache("Offline cache downloaded successfully.", "ok");
-            markCacheComplete();
-            waitForTap(
-                "CACHE COMPLETE — press X or tap to run",
-                go
-            );
-        }, false);
+        ac.addEventListener(
+            "cached",
+            function () {
+                setCache(
+                    "Cached for offline use. You may now turn off Wi-Fi or disconnect the LAN cable.",
+                    true
+                );
+                markCacheComplete();
 
-        ac.addEventListener("updateready", function () {
-            try { ac.swapCache(); } catch (e) {}
-            setCache("Cache update downloaded successfully.", "ok");
-            markCacheComplete();
-            waitForTap(
-                "UPDATE READY — press X or tap to reload and run",
-                function () { location.reload(); }
-            );
-        }, false);
+                waitForTap(
+                    "CACHED (first run) -- press X or tap to run",
+                    go
+                );
+            },
+            false
+        );
 
-        ac.addEventListener("noupdate", function () {
-            setCache("Cache is already current and ready for offline use.", "ok");
-            markCacheComplete();
-            go();
-        }, false);
+        ac.addEventListener(
+            "updateready",
+            function () {
+                try {
+                    ac.swapCache();
+                } catch (e) {}
 
-        ac.addEventListener("error", function () {
-            document.body.className = "error";
-            setCache("Cache download failed. Keep the network connected and try again.", "bad");
-            setProgress(100);
-            waitForTap(
-                "CACHE FAILED — press X or tap to run anyway",
-                go
-            );
-        }, false);
+                setCache(
+                    "Cache update downloaded. You may now turn off Wi-Fi or disconnect the LAN cable.",
+                    true
+                );
+                markCacheComplete();
 
-        ac.addEventListener("obsolete", function () {
-            document.body.className = "error";
-            setCache("The offline cache manifest is obsolete.", "bad");
-            setProgress(100);
-            waitForTap(
-                "CACHE OBSOLETE — press X or tap to run",
-                go
-            );
-        }, false);
+                waitForTap(
+                    "UPDATE READY -- press X or tap to reload & run",
+                    function () {
+                        location.reload();
+                    }
+                );
+            },
+            false
+        );
+
+        ac.addEventListener(
+            "noupdate",
+            function () {
+                setCache(
+                    "Cached -- offline ready. You may now turn off Wi-Fi or disconnect the LAN cable.",
+                    true
+                );
+                markCacheComplete();
+
+                go();
+            },
+            false
+        );
+
+        ac.addEventListener(
+            "error",
+            function () {
+                setCache(
+                    "Cache unavailable"
+                );
+
+                waitForTap(
+                    "CACHE FAILED -- press X or tap to run anyway",
+                    go
+                );
+            },
+            false
+        );
+
+        ac.addEventListener(
+            "obsolete",
+            function () {
+                setCache(
+                    "Cache obsolete"
+                );
+
+                waitForTap(
+                    "CACHE OBSOLETE -- press X or tap to run",
+                    go
+                );
+            },
+            false
+        );
     }
 })();
 </script>
