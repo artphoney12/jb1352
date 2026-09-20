@@ -1,12 +1,29 @@
 CACHE MANIFEST
 # PS4 JB FOR 13.52
-# UI/cache revision: 2026-09-20-r1
-# Change this revision line whenever any cached file is updated.
+# UI/cache revision: 2026-09-20-r2
+# Change revision whenever cached files are updated.
 
 CACHE:
+
+# Main pages
 index.html
 jb.html
+
+# Jailbreak entry
 jb.js?v=10
+
+# Exploit dependencies
+core.js?v=10
+mem.js
+int64.js
+ps4_offsets.js
+rpc_worker.js
+
+# Firmware 13.52 kernel patch
+patches/1352.bin
+
+# Payload
+payload2.bin
 
 NETWORK:
 *
