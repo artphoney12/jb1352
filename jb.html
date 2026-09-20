@@ -30,7 +30,6 @@
 
     #brand {
       position: fixed;
-
       top: calc(50% - 45px);
       left: 50%;
 
@@ -51,7 +50,34 @@
       z-index: 2;
     }
 
-    /* Spinner */
+    #credit {
+      position: fixed;
+
+      left: 0;
+      right: 0;
+
+      bottom: 14px;
+
+      text-align: center;
+
+      font-size: 12px;
+
+      color: #5c6672;
+
+      z-index: 3;
+    }
+
+    #credit a {
+      color: #9fb3d0;
+      text-decoration: none;
+    }
+
+    #credit a:hover {
+      text-decoration: underline;
+    }
+
+    /* running: a spinner under the brand.
+       jb.js sets body.done / body.fail / body.log. */
 
     #spin {
       position: fixed;
@@ -79,18 +105,16 @@
     }
 
     @keyframes spin {
-
       to {
         transform:
           rotate(360deg);
       }
-
     }
 
     #msg {
       position: fixed;
 
-      top: calc(50% + 35px);
+      top: 50%;
 
       left: 0;
       right: 0;
@@ -129,7 +153,7 @@
       display: block;
     }
 
-    /* ?log=1 */
+    /* ?log=1 -- the full step log, styled like the landing. */
 
     body.log #spin,
     body.log #msg {
@@ -137,14 +161,11 @@
     }
 
     body.log #wrap {
-
       padding:
         14px 18px;
-
     }
 
     body.log #state {
-
       display: block;
 
       font-size:
@@ -155,11 +176,9 @@
 
       margin:
         0 0 8px;
-
     }
 
     body.log #out {
-
       display: block;
 
       white-space:
@@ -186,7 +205,6 @@
 
       overflow-y:
         auto;
-
     }
 
     .ok {
@@ -241,6 +259,11 @@
 
     <div id="out"></div>
 
+  </div>
+
+  <div id="credit">
+    Exploit by
+    <a href="https://github.com/thebelx">Thebelx</a>
   </div>
 
   <script type="module">
