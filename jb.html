@@ -1,300 +1,63 @@
 <!doctype html>
-<html lang="en" manifest="cache.appcache">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PS4 JB FOR 13.52</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PS4 JB Multi-FW Loader</title>
   <style>
-    * { box-sizing:border-box; }
-
-    html, body {
-      margin:0;
-      padding:0;
-      min-height:100%;
-      background:#07090c;
-      color:#d9e1eb;
-      font:15px/1.45 "Segoe UI", Arial, sans-serif;
-      overflow:hidden;
-    }
-
-    body:before {
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at 50% 42%, rgba(38,92,158,.16), transparent 36%),
-        linear-gradient(180deg, rgba(255,255,255,.018), transparent 35%);
-    }
-
-    #stage {
-      position:fixed;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px 16px 76px;
-    }
-
-    #card {
-      width:min(700px, 94vw);
-      padding:30px 30px 27px;
-      text-align:center;
-      background:rgba(14,18,24,.94);
-      border:1px solid #26303d;
-      border-radius:14px;
-      box-shadow:0 18px 50px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.035);
-      position:relative;
-      overflow:hidden;
-    }
-
-    #card:before {
-      content:"";
-      position:absolute;
-      left:0;
-      right:0;
-      top:0;
-      height:3px;
-      background:linear-gradient(90deg,#3d8eff,#7fd0a0,#3d8eff);
-      background-size:200% 100%;
-      animation:scan 3.2s linear infinite;
-    }
-
-    @keyframes scan {
-      from { background-position:0 0; }
-      to { background-position:200% 0; }
-    }
-
-    #eyebrow {
-      margin-top:3px;
-      color:#75869b;
-      font-size:11px;
-      font-weight:700;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-    }
-
-    #brand {
-      margin:8px 0 0;
-      font-size:30px;
-      line-height:1.12;
-      font-weight:800;
-      letter-spacing:.045em;
-      color:#f2f6fb;
-    }
-
-    #goldhen {
-      display:inline-block;
-      margin-top:13px;
-      padding:6px 10px;
-      border:1px solid #3a684f;
-      border-radius:999px;
-      background:#0f1b15;
-      color:#9fe1b8;
-      font-size:11px;
-      font-weight:700;
-      letter-spacing:.04em;
-    }
-
-    #notice {
-      max-width:590px;
-      margin:17px auto 0;
-      padding:10px 12px;
-      border:1px solid #4b3c1f;
-      border-radius:9px;
-      background:#1a160d;
-      color:#c8b98a;
-      font-size:11px;
-      line-height:1.55;
-    }
-
-    #loaderArea {
-      margin-top:25px;
-    }
-
-    #spin {
-      width:52px;
-      height:52px;
-      margin:0 auto;
-      border:4px solid #1e2935;
-      border-top-color:#78b8ff;
-      border-right-color:#7fd0a0;
-      border-radius:50%;
-      animation:spin .85s linear infinite;
-      box-shadow:0 0 24px rgba(79,152,245,.08);
-    }
-
-    @keyframes spin { to { transform:rotate(360deg); } }
-
-    #loadingTitle {
-      margin:14px 0 0;
-      font-size:15px;
-      font-weight:750;
-      color:#dbe5ef;
-    }
-
-    #loadingSub {
-      margin:5px 0 0;
-      color:#75869a;
-      font-size:11px;
-    }
-
-    #barTrack {
-      width:min(400px, 86%);
-      height:5px;
-      margin:17px auto 0;
-      border-radius:999px;
-      overflow:hidden;
-      background:#151d26;
-    }
-
-    #bar {
-      width:34%;
-      height:100%;
-      border-radius:999px;
-      background:linear-gradient(90deg,#4f98f5,#7fd0a0);
-      animation:indeterminate 1.55s ease-in-out infinite;
-      transform:translateX(-120%);
-    }
-
-    @keyframes indeterminate {
-      0% { transform:translateX(-120%); }
-      55% { transform:translateX(160%); }
-      100% { transform:translateX(310%); }
-    }
-
-    #msg {
-      display:none;
-      margin-top:22px;
-      font-size:16px;
-      font-weight:750;
-      color:#d79a90;
-    }
-
-    #msgSub {
-      display:none;
-      margin-top:6px;
-      color:#8290a2;
-      font-size:11px;
-    }
-
-    #updateInfo {
-      margin-top:18px;
-      color:#647286;
-      font-size:10px;
-      line-height:1.55;
-    }
-
-    #wrap { padding:0; }
-    #state, #out { display:none; }
-
-    body.done #spin,
-    body.done #barTrack,
-    body.fail #spin,
-    body.fail #barTrack {
-      display:none;
-    }
-
-    body.done #loadingTitle {
-      color:#8bd9a9;
-    }
-
-    body.done #loadingTitle:before {
-      content:"Jailbreak process completed";
-    }
-
-    body.done #loadingTitle {
-      font-size:0;
-    }
-
-    body.done #loadingTitle:before {
-      font-size:15px;
-    }
-
-    body.done #loadingSub {
-      color:#7a8b9f;
-    }
-
-    body.fail #loadingTitle,
-    body.fail #loadingSub {
-      display:none;
-    }
-
-    body.fail #msg,
-    body.fail #msgSub {
-      display:block;
-    }
-
-    /* ?log=1 keeps the exploit's full debug output available. */
-    body.log {
-      overflow:auto;
-    }
-
-    body.log #stage {
-      display:none;
-    }
-
-    body.log #wrap {
-      padding:14px 18px;
-    }
-
-    body.log #state {
-      display:block;
-      font-size:22px;
-      font-weight:700;
-      margin:0 0 8px;
-    }
-
-    body.log #out {
-      display:block;
-      white-space:pre-wrap;
-      font:12px/1.45 Consolas, monospace;
-      background:#0d1218;
-      border:1px solid #202b37;
-      border-radius:7px;
-      padding:10px 12px;
-      height:calc(100vh - 74px);
-      overflow-y:auto;
-    }
-
-    .ok { color:#7fd0a0; }
-    .bad, .danger { color:#d08a7f; }
-    .warn { color:#d8c07f; }
-    .safe { color:#7fd0a0; }
-    code { color:#9fb3d0; }
-
-    #credit {
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:14px;
-      text-align:center;
-      font-size:11px;
-      color:#536071;
-      z-index:3;
-    }
-
-    #credit a { color:#8198b7; text-decoration:none; }
-    #credit a:hover { text-decoration:underline; }
-
-    @media (max-width:600px) {
-      #card { padding:25px 18px 23px; }
-      #brand { font-size:25px; }
-    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:#070a0e;color:#e7edf5;font-family:Arial,Helvetica,sans-serif}
+    body{min-height:100vh;overflow:hidden}
+    #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px}
+    #card{width:min(720px,95vw);background:#0d1218;border:1px solid #202a35;border-radius:16px;padding:34px;box-shadow:0 24px 70px rgba(0,0,0,.45);text-align:center}
+    #eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#748399;margin-bottom:10px}
+    #brand{font-size:31px;font-weight:800;margin-bottom:10px}
+    #goldhen{display:inline-block;padding:7px 10px;border:1px solid #4b4122;background:#18160e;color:#dfc16d;border-radius:999px;font-size:12px;font-weight:700}
+    #notice{margin:20px auto 0;max-width:590px;color:#8d9bad;font-size:13px;line-height:1.6}
+    #routeInfo{margin:16px auto 0;max-width:590px;padding:12px;border:1px solid #202b37;background:#090e13;border-radius:8px;color:#a8b8ca;font-size:13px;line-height:1.55}
+    #loaderArea{margin-top:28px}
+    #spin{width:38px;height:38px;border-radius:50%;border:3px solid #263341;border-top-color:#6b9cff;margin:0 auto 15px;animation:spin .85s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #loadingTitle{font-size:18px;font-weight:700}
+    #loadingSub{margin-top:8px;color:#728197;font-size:13px}
+    #barTrack{height:5px;max-width:420px;margin:18px auto 0;background:#151e28;border-radius:99px;overflow:hidden}
+    #bar{height:100%;width:72%;background:#5c8fe8;animation:pulse 1.4s ease-in-out infinite alternate}
+    @keyframes pulse{from{opacity:.45;transform:translateX(-35%)}to{opacity:1;transform:translateX(35%)}}
+    #donePanel,#failPanel{display:none;margin-top:25px}
+    #donePanel{color:#7fd0a0}
+    #failPanel{color:#e58d82}
+    #doneTitle,#failTitle{font-size:21px;font-weight:800}
+    #doneSub,#failSub{margin-top:8px;font-size:13px;color:#8797aa}
+    #wrap{display:none;padding:18px;height:100vh;overflow:hidden}
+    #state{font-size:20px;font-weight:700;margin-bottom:10px}
+    #out{white-space:pre-wrap;font:12px/1.45 Consolas,monospace;background:#0d1218;border:1px solid #202b37;border-radius:8px;padding:12px;height:calc(100vh - 62px);overflow-y:auto}
+    .ok{color:#7fd0a0}.bad,.danger{color:#e58d82}.warn{color:#d8c07f}.safe{color:#7fd0a0}
+    body.done #loaderArea{display:none}
+    body.done #donePanel{display:block}
+    body.fail #loaderArea{display:none}
+    body.fail #failPanel{display:block}
+    body.log #stage{display:none}
+    body.log #wrap{display:block}
+    #credit{position:fixed;left:0;right:0;bottom:12px;text-align:center;font-size:11px;color:#536071}
+    #credit a{color:#8198b7;text-decoration:none}
+    @media(max-width:600px){#card{padding:25px 18px}#brand{font-size:24px}}
   </style>
 </head>
-
 <body>
   <div id="stage">
     <div id="card">
       <div id="eyebrow">PlayStation 4 Jailbreak Host</div>
-      <div id="brand">PS4 JB FOR 13.52</div>
-      <div id="goldhen">INCLUDES GoldHEN v2.4b18.11</div>
+      <div id="brand">PS4 JB MULTI-FW 13.02–13.52</div>
+      <div id="goldhen">AUTO PAYLOAD · GoldHEN v2.4b18.12 INCLUDED</div>
 
       <div id="notice">
-        IMPORTANT: This package is prepared for firmware 13.52. Older firmware compatibility entries remain in the build,
-        but 13.52 is the primary target. Use a build intended for your exact firmware for normal use.
+        Supported firmware: 13.02, 13.04, 13.50 and 13.52.
+        Firmware detection and payload selection are automatic.
+      </div>
+
+      <div id="routeInfo">
+        Firmware: <b id="fwDetected">detecting...</b><br>
+        Payload: <b id="payloadDetected">selecting...</b>
       </div>
 
       <div id="loaderArea">
@@ -304,12 +67,14 @@
         <div id="barTrack"><div id="bar"></div></div>
       </div>
 
-      <div id="msg">Jailbreak failed — restart your console and try again.</div>
-      <div id="msgSub">Keep this page open only while retrying the exploit.</div>
+      <div id="donePanel">
+        <div id="doneTitle">Jailbreak completed.</div>
+        <div id="doneSub">The firmware-specific payload was loaded.</div>
+      </div>
 
-      <div id="updateInfo">
-        GoldHEN v2.4b18.11 is included. If a newer GoldHEN build becomes available for firmware 13.52 or below,
-        an updated release notice will be published.
+      <div id="failPanel">
+        <div id="failTitle">Jailbreak failed.</div>
+        <div id="failSub">Restart the console and try again.</div>
       </div>
     </div>
   </div>
@@ -324,7 +89,59 @@
   </div>
 
   <script type="module">
-    import "./jb.js?v=10";
+    import { PS4, offsetsFor } from "./ps4_offsets.js";
+
+    // Multi-firmware payload routing.
+    // We mutate the existing firmware table before jb.js is loaded,
+    // so the exploit engine remains untouched.
+    var PAYLOAD_MAP = {
+      "13.02": "goldhen2.4b18.12.bin",
+      "13.04": "goldhen2.4b18.12.bin",
+      "13.50": "goldhen2.4b18.12.bin",
+      "13.52": "payload2.bin"
+    };
+
+    Object.keys(PAYLOAD_MAP).forEach(function (fw) {
+      if (PS4[fw]) {
+        PS4[fw].payload = PAYLOAD_MAP[fw];
+      }
+    });
+
+    var detected = offsetsFor(navigator.userAgent);
+    var fw = detected.key;
+    var payload = fw && PAYLOAD_MAP[fw] ? PAYLOAD_MAP[fw] : null;
+
+    var fwEl = document.getElementById("fwDetected");
+    var payloadEl = document.getElementById("payloadDetected");
+
+    fwEl.textContent = fw || "unknown";
+
+    if (!detected.off || !payload) {
+      payloadEl.textContent = "unsupported";
+      document.getElementById("failTitle").textContent = "Unsupported firmware.";
+      document.getElementById("failSub").textContent =
+        "Supported only: 13.02, 13.04, 13.50 and 13.52.";
+      document.body.className = "fail";
+    } else {
+      payloadEl.textContent =
+        payload === "goldhen2.4b18.12.bin"
+          ? "GoldHEN v2.4b18.12"
+          : "payload2.bin (13.52 dedicated)";
+
+      // Load jb.js only after PS4[fw].payload has been overridden.
+      // Because ES modules are singleton instances per URL, jb.js will read
+      // the already-updated PS4 object from ps4_offsets.js.
+      var loader = document.createElement("script");
+      loader.type = "module";
+      loader.src = "./jb.js?v=10";
+      loader.onerror = function () {
+        document.getElementById("failTitle").textContent = "Loader error.";
+        document.getElementById("failSub").textContent =
+          "jb.js could not be loaded. Check the offline cache / repository files.";
+        document.body.className = "fail";
+      };
+      document.head.appendChild(loader);
+    }
   </script>
 </body>
 </html>

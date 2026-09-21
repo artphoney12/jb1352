@@ -1,7 +1,7 @@
 CACHE MANIFEST
-# PS4 JB FOR 13.52
-# UI/cache revision: 2026-09-20-r2
-# Change revision whenever cached files are updated.
+# PS4 JB MULTI-FW 13.02 / 13.04 / 13.50 / 13.52
+# UI/cache revision: 2026-09-21-r3
+# Change this revision whenever a cached file is updated.
 
 CACHE:
 
@@ -9,7 +9,7 @@ CACHE:
 index.html
 jb.html
 
-# Jailbreak entry
+# Jailbreak engine
 jb.js?v=10
 
 # Exploit dependencies
@@ -19,10 +19,17 @@ int64.js
 ps4_offsets.js
 rpc_worker.js
 
-# Firmware 13.52 kernel patch
+# Kernel patches
+# 13.02 and 13.04 share 1302.bin
+patches/1302.bin
+patches/1350.bin
 patches/1352.bin
 
-# Payload
+# Payloads
+# 13.02 / 13.04 / 13.50
+goldhen2.4b18.12.bin
+
+# 13.52
 payload2.bin
 
 NETWORK:
